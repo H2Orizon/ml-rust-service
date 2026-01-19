@@ -10,9 +10,10 @@ __pycache__/
 .eggs/
 dist/
 build/
+data/
 
 # Virtual environment
-venv/
+venv
 .env/
 .env.*
 
@@ -28,7 +29,7 @@ venv/
 # =========================
 # Rust
 # =========================
-/target/
+target
 Cargo.lock
 
 # =========================
