@@ -1,17 +1,20 @@
-import torch
-from train import SentimentLSTM
+import tensorflow as tf
+import tf2onnx
 
-model = SentimentLSTM()
-model.load_state_dict(torch.load("model.pt"))
-model.eval()
+models_path="python_ml/data/models/"
 
-dummy_input = torch.randint(0, 10000, (1, 100))
+model = tf.keras.models.load_model(models_path+"model.h5")
+print("Keras модель завантажена")
 
-torch.onnx.export(
-    model,
-    dummy_input,
-    "model.onnx",
-    input_names = ["input"],
-    output_names = ["output"],
-    dynamic_axes={"input": {0: "batch"}, "output": {0: "batch"}}
+@tf.function(input_signature=[tf.TensorSpec([None, 200], tf.int32, name="input")])
+def model_fn(x):
+    return model(x)
+
+output_path = models_path+"model.onnx"
+model_proto, _ = tf2onnx.convert.from_function(
+    model_fn,
+    input_signature=[tf.TensorSpec([None, 200], tf.int32, name="input")],
+    output_path=output_path,
+    opset=13
 )
+print(f"✅ ONNX модель збережена в {output_path}")

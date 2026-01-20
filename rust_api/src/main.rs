@@ -9,7 +9,7 @@ use onnxruntime::{
 
 #[derive(Deserialize)]
 struct PredictRequest{
-    input: Vec<f32>,
+    input: Vec<i64>,
 }
 
 #[derive(Serialize)]
@@ -33,11 +33,11 @@ async fn predict(
         .unwrap()
         .with_optimization_level(GraphOptimizationLevel::Basic)
         .unwrap()
-        .with_model_from_file("../python_ml/model.onnx")
+        .with_model_from_file("../python_ml/data/models/model.onnx")
         .unwrap();
 
     let input_array = 
-        Array2::from_shape_vec((1, req.input.len()), req.input).unwrap();
+        Array2::from_shape_vec((1, 200), req.input.iter().map(|&x| x as i32).collect::<Vec<i32>>()).unwrap();
 
     let outputs: Vec<OrtOwnedTensor<f32, _>> =
         session.run(vec![input_array.into()]).unwrap();
@@ -62,7 +62,7 @@ async fn main() {
         .route("/predict", post(predict))
         .with_state(state);
 
-    println!("🚀 Rust ML API running on http://localhost:8000");
+    println!("Rust ML API running on http://localhost:8000");
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
 

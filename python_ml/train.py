@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import os
+import pickle
 
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -7,7 +9,10 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense
 
-df = pd.read_csv("data/IMDB Dataset.csv")
+data_url = "python_ml/data/"
+
+os.makedirs(data_url+"models", exist_ok=True)
+df = pd.read_csv(data_url+"raw/IMDB Dataset.csv")
 
 df['sentiment'] = df['sentiment'].map({'positive':1, 'negative':0})
 
@@ -31,4 +36,11 @@ model.summary()
 
 model.fit(X_train, y_train, epochs=3, batch_size=64, validation_data=(X_test, y_test))
 
-model.save("model.h5")
+model.save(data_url+"models/model.h5")
+
+os.makedirs(data_url+"models/tokenizer_dir", exist_ok=True)
+
+with open(data_url+"models/tokenizer_dir/tokenizer.pkl", "wb") as f:
+    pickle.dump(tokenizer, f)
+
+print("✅ Tokenizer збережено")
