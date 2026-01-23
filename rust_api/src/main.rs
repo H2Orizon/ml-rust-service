@@ -37,7 +37,9 @@ async fn predict(
         .unwrap();
 
     let input_array = 
-        Array2::from_shape_vec((1, 200), req.input.iter().map(|&x| x as i32).collect::<Vec<i32>>()).unwrap();
+        Array2::from_shape_vec((1, 200), req.input.iter()
+            .map(|&x| x as i32).collect::<Vec<i32>>())
+            .unwrap();
 
     let outputs: Vec<OrtOwnedTensor<f32, _>> =
         session.run(vec![input_array.into()]).unwrap();
