@@ -150,7 +150,7 @@ GET /health
 
 ---
 
-## 🌐 Web Interface
+## Web Interface
 
 Streamlit UI available at:
 
